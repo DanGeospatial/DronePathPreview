@@ -15,7 +15,7 @@ def get_drone_stats(folder_name: str):
     with scandir(folder_name) as it:
         for file in it:
             if file.is_file():
-                if file.name.endswith('.JPG'):
+                if file.name.endswith('.JPG') or file.name.endswith('.TIF'):
                     img = Image.open(file)
                     exif = img.getexif()
                     try:
@@ -44,7 +44,7 @@ def get_gps_exif(folder_name: str):
     with scandir(folder_name) as it:
         for file in it:
             if file.is_file():
-                if file.name.endswith('.JPG'):
+                if file.name.endswith('.JPG') or file.name.endswith('.TIF'):
                     num_images += 1
                     gps_dict = {}
                     img = Image.open(file)
@@ -63,7 +63,7 @@ def get_gps_exif(folder_name: str):
                                 if tag == 'GPSAltitude':
                                     altitudes.append(float(v))
                                     gps_dict.update({"GPSAltitude": float(v)})
-                                    gps_dict.update({"id": file.name.replace('.JPG', "")})
+                                    gps_dict.update({"id": file.name.replace('.JPG', "").replace('.TIF', "")})
                                 if tag == 'GPSLatitude':
                                     gps_dict.update({"GPSLatitude": v})
                                 if tag == 'GPSLongitude':
@@ -83,19 +83,19 @@ def get_gps_exif(folder_name: str):
                     dd_lat = (float(deg_lat.replace("(", "")) + float(minutes_lat) / 60 + float(seconds_lat.replace(
                         ")", "")) / (60 * 60)) * (-1 if gps_dict.get('GPSLatitudeRef') in ['W', 'S'] else 1)
 
-                    if file.name.replace('.JPG', "").endswith('_V'):
+                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_V'):
                         img_type = 'RGB'
-                    if file.name.replace('.JPG', "").endswith('_T'):
+                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_T'):
                         img_type = 'Thermal'
-                    if file.name.replace('.JPG', "").endswith('_D'):
+                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_D'):
                         img_type = 'RGB'
-                    if file.name.replace('.JPG', "").endswith('_MS_G'):
+                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_MS_G'):
                         img_type = 'Green'
-                    if file.name.replace('.JPG', "").endswith('_MS_R'):
+                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_MS_R'):
                         img_type = 'Red'
-                    if file.name.replace('.JPG', "").endswith('_MS_RE'):
+                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_MS_RE'):
                         img_type = 'Red Edge'
-                    if file.name.replace('.JPG', "").endswith('_MS_NIR'):
+                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_MS_NIR'):
                         img_type = 'Near-infrared'
 
                     coordinate_list.append({
