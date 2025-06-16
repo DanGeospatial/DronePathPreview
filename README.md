@@ -19,7 +19,7 @@ It will automatically retrieve the drone and flight information.
 - Currently tested on the DJI M3T images but may support the DJI M3M. 
 
 # Known Issues
-- The pre-complied executable will not export flight data due to a GDAL issue with pyinstaller
+- The precompiled executable will not export flight data due to a GDAL issue with pyinstaller
 
 # Requires
 - geopandas
