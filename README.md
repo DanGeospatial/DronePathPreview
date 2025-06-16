@@ -1,4 +1,4 @@
-# DronePathPreview
+# Drone Path Preview
 A simple tool of previewing the results of drone flights.
 
 ![img.png](img.png)
