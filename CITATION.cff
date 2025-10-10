@@ -4,7 +4,7 @@ authors:
   - family-names: "Nelson"
     given-names: "Daniel"
     orcid: "https://orcid.org/0009-0005-5200-6652"
-title: "Drone Path Preview"
-version: 1.0.0
-date-released: 2025-06-15
+title: "DJI M3T Thermal Converter"
+version: 2.0.0
+date-released: 2025-10-10
 url: "https://github.com/DanGeospatial/DronePathPreview"

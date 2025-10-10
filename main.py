@@ -21,7 +21,7 @@ import re
 import multiprocessing
 import subprocess
 import numpy as np
-import piexif
+from multiprocessing import freeze_support
 from os import scandir
 from PIL import Image
 from PIL.ExifTags import TAGS, GPSTAGS, IFD
@@ -352,6 +352,8 @@ class DroneWidget(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     app.setApplicationDisplayName("DJI M3T Thermal Converter")
+
+    freeze_support()
 
     widget = DroneWidget()
     widget.resize(400, 600)
