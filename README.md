@@ -1,31 +1,23 @@
 # Drone Path Preview
-A simple tool of previewing the results of drone flights.
-
-![img.png](img.png)
+DJI Mavic drones save thermal images in a thermogram format. This format is not compatible with photogrammetry pipelines (e.g., Agisoft Metashape, Pix4D).
+This GUI application offers simple 
 
 # Usage
-Just point the application towards a folder containing drone images.
-It will automatically retrieve the drone and flight information.
-
-# Key Features of Drone Path Preview
-- Designed to read image files collected from DJI Drones!
-- Will provide you with information on flight start time, number of images, altitude.
-- 'Map Flight Data' will provide a display of where images were captured.
-- Can export flight information to a ESRI shapefile, geojson or any OGR data source supported by Pyogrio.
-- Exported data includes coordinates, altitude, image type, and file name.
+1. Download required software. 
+2. Rename "exiftool(-k).exe" to "exiftool.exe".
+3. Open folder of DJI M3T thermal images
+4. Select dji_irp.exe from thermal sdk (\dji_thermal_sdk_v1.7_20241205\utility\bin\windows\release_x64\dji_irp.exe)
+5. Select exiftool.exe
+6. Set Emissivity, Humidity, Altitude and Temperature
+7. Select "Convert Thermal Images". It will first ask you for an export folder to save the images.
 
 # Notes
-- This is the initial release! So there may be bugs, features are slim and UI looks ugly.
-- Currently tested on the DJI M3T images but may support the DJI M3M. 
+- This is the initial release! So there may be bugs and the UI looks ugly.
+- Currently tested on the DJI M3T images. 
 
 # Known Issues
-- The precompiled executable will not export flight data due to a GDAL issue with pyinstaller
+- It does not check if your input settings are misconfigured! Limited error handing.
 
 # Requires
-- geopandas
-- matplotlib
-- cartopy
-- PIL
-- shapely
-- PySide6
-- Pyogrio
+- ExifTool Windows executable (https://exiftool.org/index.html)
+- DJI Thermal SDK (https://www.dji.com/ca/downloads/softwares/dji-thermal-sdk)
