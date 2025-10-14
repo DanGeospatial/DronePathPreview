@@ -17,7 +17,6 @@ Copyright (C) 2025  Daniel Nelson
 """
 import os
 import sys
-import re
 import multiprocessing
 import subprocess
 import numpy as np
@@ -79,7 +78,6 @@ def get_drone_stats(folder_name: str):
 
 
 def get_gps_exif(folder_name: str):
-    coordinate_list = []
     altitudes = []
     num_images = 0
 
@@ -117,28 +115,6 @@ def get_gps_exif(folder_name: str):
                                 # print(tag, v)
                         except KeyError:
                             pass
-
-                    deg_lon, minutes_lon, seconds_lon, = re.split(',', str(gps_dict.get('GPSLongitude')))
-                    deg_lat, minutes_lat, seconds_lat, = re.split(',', str(gps_dict.get('GPSLatitude')))
-                    dd_lon = (float(deg_lon.replace("(", "")) + float(minutes_lon) / 60 + float(seconds_lon.replace(
-                        ")", "")) / (60 * 60)) * (-1 if gps_dict.get('GPSLongitudeRef') in ['W', 'S'] else 1)
-                    dd_lat = (float(deg_lat.replace("(", "")) + float(minutes_lat) / 60 + float(seconds_lat.replace(
-                        ")", "")) / (60 * 60)) * (-1 if gps_dict.get('GPSLatitudeRef') in ['W', 'S'] else 1)
-
-                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_V'):
-                        img_type = 'RGB'
-                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_T'):
-                        img_type = 'Thermal'
-                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_D'):
-                        img_type = 'RGB'
-                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_MS_G'):
-                        img_type = 'Green'
-                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_MS_R'):
-                        img_type = 'Red'
-                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_MS_RE'):
-                        img_type = 'Red Edge'
-                    if file.name.replace('.JPG', "").replace('.TIF', "").endswith('_MS_NIR'):
-                        img_type = 'Near-infrared'
 
     alt_min = min(altitudes)
     alt_max = max(altitudes)
@@ -263,8 +239,7 @@ class DroneWidget(QtWidgets.QWidget):
 
     @QtCore.Slot()
     def open_sdk_dir_exif(self):
-        # Get sdk_dir file
-        # /dji_thermal_sdk_v1.4_20220929/utility/bin/windows/release_x64/dji_irp.exe
+        # Get exiftool file
         if self.dialog_export_exif.exec():
             self.filename_exif = self.dialog_export_exif.selectedUrls()
             self.sdk_dir_exif = self.filename_exif[0].toString().replace('file:///', '')
@@ -293,10 +268,6 @@ class DroneWidget(QtWidgets.QWidget):
         num_processes = os.cpu_count()
 
         with multiprocessing.Pool(processes=num_processes) as pool:
-            """
-            results = pool.map(lambda p: convert_and_copy(p, self.foldername_out, self.sdk_dir, self.emissivity,
-                                                          self.humidity, self.distance, self.reflection), image_files)
-                                                          """
             tasks = [
                 (
                     p.path,
