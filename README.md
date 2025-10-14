@@ -15,6 +15,7 @@ This GUI application offers simple and efficient way to calibrate your M3T therm
 - This is the initial release! So there may be bugs and the UI looks ugly.
 - Currently tested on the DJI M3T images. 
 - This application automatically transfers all RTK and flight information!
+- Only enable "Infrared Image Super-Resolution Mode" if you know your images are captured in this mode.
 
 # Known Issues
 - It does not check if your input settings are misconfigured! Limited error handing.
