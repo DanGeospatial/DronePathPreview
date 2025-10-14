@@ -5,6 +5,6 @@ authors:
     given-names: "Daniel"
     orcid: "https://orcid.org/0009-0005-5200-6652"
 title: "DJI M3T Thermal Converter"
-version: 2.0.0
+version: 2.5.0
 date-released: 2025-10-10
 url: "https://github.com/DanGeospatial/DronePathPreview"

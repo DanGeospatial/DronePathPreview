@@ -20,6 +20,7 @@ import sys
 import multiprocessing
 import subprocess
 import numpy as np
+from subprocess import CREATE_NO_WINDOW
 from multiprocessing import freeze_support
 from os import scandir
 from PIL import Image
@@ -27,21 +28,21 @@ from PIL.ExifTags import TAGS, GPSTAGS, IFD
 from PySide6 import QtCore, QtWidgets
 
 
-def convert_and_copy(image_p, file_name, out_dir, sdk_dir, em, hum, dist, refl, exif_dir):
+def convert_and_copy(image_p, file_name, out_dir, sdk_dir, em, hum, dist, refl, exif_dir, res):
     input_name = file_name.replace('.JPG', "").replace('.TIF', "")
     raw_out = out_dir + '/' + input_name + '.raw'
     tiff_out = out_dir + '/' + input_name + '.tif'
     # --ambient instead of --reflection
     sdk_cmd = f"{sdk_dir} -s {image_p} -a measure -o {raw_out} --measurefmt float32 --emissivity {em} --humidity {hum} --distance {dist} --ambient {refl}"
-    subprocess.run(sdk_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    subprocess.run(sdk_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=CREATE_NO_WINDOW)
 
-    rows, cols = 512, 640
+    rows, cols = res
     binary_data = np.fromfile(raw_out, dtype=np.float32).reshape((rows, cols))
     pil_image = Image.fromarray(binary_data, mode='F')
-    pil_image.save(tiff_out)  # , exif=exif_bytes
+    pil_image.save(tiff_out)
 
     sdk_cmd_exif = f"{exif_dir} -tagsfromfile {image_p} {tiff_out}"
-    subprocess.run(sdk_cmd_exif)
+    subprocess.run(sdk_cmd_exif, creationflags=CREATE_NO_WINDOW)
 
     os.remove(raw_out)
     os.remove(tiff_out + '_original')
@@ -145,6 +146,10 @@ class DroneWidget(QtWidgets.QWidget):
         self.reflection_box_label.setFrameStyle(frame_style)
         self.reflection_box_button = QtWidgets.QPushButton("Set Temperature")
 
+        self.resolution_check_box = QtWidgets.QCheckBox("Infrared Image Super-Resolution Mode")
+        self.resolution_check_box.setToolTip(
+            "If your images were captured using infrared image super resolution mode they will be size 1280×1024")
+
         self.dialog_import = QtWidgets.QFileDialog()
         self.dialog_import.setFileMode(QtWidgets.QFileDialog.FileMode.Directory)
 
@@ -177,6 +182,7 @@ class DroneWidget(QtWidgets.QWidget):
         self.reflection = None
         self.sdk_dir = ""
         self.sdk_dir_exif = ""
+        self.resolution = 512, 640
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.addWidget(self.button_open)
@@ -191,6 +197,7 @@ class DroneWidget(QtWidgets.QWidget):
         self.layout.addWidget(self.distance_box_label)
         self.layout.addWidget(self.reflection_box_button)
         self.layout.addWidget(self.reflection_box_label)
+        self.layout.addWidget(self.resolution_check_box)
         self.layout.addWidget(self.text_h1)
         self.layout.addWidget(self.text_make)
         self.layout.addWidget(self.text_model)
@@ -210,6 +217,7 @@ class DroneWidget(QtWidgets.QWidget):
         self.humidity_box_button.clicked.connect(self.open_humidity)
         self.distance_box_button.clicked.connect(self.open_distance)
         self.reflection_box_button.clicked.connect(self.open_reflection)
+        self.resolution_check_box.stateChanged.connect(self.set_resolution)
 
     @QtCore.Slot()
     def open_import_dir(self):
@@ -278,7 +286,8 @@ class DroneWidget(QtWidgets.QWidget):
                     self.humidity,
                     self.distance,
                     self.reflection,
-                    self.sdk_dir_exif
+                    self.sdk_dir_exif,
+                    self.resolution
                 )
                 for p in image_files
             ]
@@ -318,6 +327,13 @@ class DroneWidget(QtWidgets.QWidget):
         if ok:
             self.reflection_box_label.setText(f"{d:g}°C")
             self.reflection = d
+
+    @QtCore.Slot()
+    def set_resolution(self):
+        # This function is to handle infrared image super resolution mode for thermal images
+        self.resolution = 512, 640
+        if self.resolution_check_box.isChecked():
+            self.resolution = 1024, 1280
 
 
 if __name__ == "__main__":
