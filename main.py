@@ -176,7 +176,7 @@ class DroneWidget(QtWidgets.QWidget):
         self.foldername_out = ""
         self.filename = ""
         self.filename_exif = ""
-        self.emissivity = 1.0
+        self.emissivity = 0.96
         self.humidity = None
         self.distance = None
         self.reflection = None
